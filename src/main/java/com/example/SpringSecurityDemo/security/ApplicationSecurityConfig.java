@@ -1,6 +1,7 @@
 package com.example.SpringSecurityDemo.security;
 
 import static com.example.SpringSecurityDemo.security.ApplicationUserRole.ADMIN;
+import static com.example.SpringSecurityDemo.security.ApplicationUserRole.ADMINTRAINEE;
 import static com.example.SpringSecurityDemo.security.ApplicationUserRole.STUDENT;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +29,10 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests().antMatchers("/", "index", "/css/*", "/js/*")
-                .permitAll().antMatchers("/api/**").hasRole(STUDENT.name())
-                .anyRequest().authenticated().and().httpBasic();
+        http.csrf().disable().authorizeRequests()
+                .antMatchers("/", "index", "/css/*", "/js/*").permitAll()
+                .antMatchers("/api/**").hasRole(STUDENT.name()).anyRequest()
+                .authenticated().and().httpBasic();
     }
 
     @Override
@@ -43,7 +45,10 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
         UserDetails melis = User.builder().username("melis")
                 .password(passwordEncoder.encode("1234")).roles(ADMIN.name())
                 .build();
-        return new InMemoryUserDetailsManager(mehmet, melis);
+        UserDetails tom = User.builder().username("tom")
+                .password(passwordEncoder.encode("1234"))
+                .roles(ADMINTRAINEE.name()).build();
+        return new InMemoryUserDetailsManager(mehmet, melis, tom);
     }
 
 }
