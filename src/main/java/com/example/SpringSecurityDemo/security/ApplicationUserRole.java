@@ -14,13 +14,13 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 public enum ApplicationUserRole {
     STUDENT(Sets.newHashSet()),
-    ADMIN(Sets.newHashSet(STUDENT_READ, STUDENT_WRITE, COURSE_READ,
-            COURSE_WRITE)),
-    ADMINTRAINEE(Sets.newHashSet(STUDENT_READ, COURSE_READ));
+    ADMIN(Sets.newHashSet(COURSE_READ, COURSE_WRITE, STUDENT_READ,
+            STUDENT_WRITE)),
+    ADMINTRAINEE(Sets.newHashSet(COURSE_READ, STUDENT_READ));
 
     private final Set<ApplicationUserPermission> permissions;
 
-    private ApplicationUserRole(Set<ApplicationUserPermission> permissions) {
+    ApplicationUserRole(Set<ApplicationUserPermission> permissions) {
         this.permissions = permissions;
     }
 
@@ -31,7 +31,7 @@ public enum ApplicationUserRole {
     public Set<SimpleGrantedAuthority> getGrantedAuthorities() {
         Set<SimpleGrantedAuthority> permissionList = getPermissions().stream()
                 .map(permission -> new SimpleGrantedAuthority(
-                        permission.name()))
+                        permission.getPermission()))
                 .collect(Collectors.toSet());
         permissionList.add(new SimpleGrantedAuthority("ROLE_" + this.name()));
         return permissionList;

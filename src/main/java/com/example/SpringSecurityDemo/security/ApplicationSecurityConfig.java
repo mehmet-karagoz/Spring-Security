@@ -1,6 +1,5 @@
 package com.example.SpringSecurityDemo.security;
 
-import static com.example.SpringSecurityDemo.security.ApplicationUserPermission.COURSE_WRITE;
 import static com.example.SpringSecurityDemo.security.ApplicationUserRole.ADMIN;
 import static com.example.SpringSecurityDemo.security.ApplicationUserRole.ADMINTRAINEE;
 import static com.example.SpringSecurityDemo.security.ApplicationUserRole.STUDENT;
@@ -8,7 +7,7 @@ import static com.example.SpringSecurityDemo.security.ApplicationUserRole.STUDEN
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -20,6 +19,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final PasswordEncoder passwordEncoder;
@@ -31,18 +31,20 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        String url = "/management/api/**";
+
+        // String url = "/management/api/**";
+        // .antMatchers(HttpMethod.DELETE, url)
+        // .hasAuthority(COURSE_WRITE.getPermission())
+        // .antMatchers(HttpMethod.POST, url)
+        // .hasAuthority(COURSE_WRITE.getPermission())
+        // .antMatchers(HttpMethod.PUT, url)
+        // .hasAuthority(COURSE_WRITE.getPermission())
+        // .antMatchers(HttpMethod.GET, url)
+        // .hasAnyRole(ADMIN.name(), ADMINTRAINEE.name())
+
         http.csrf().disable().authorizeRequests()
                 .antMatchers("/", "index", "/css/*", "/js/*").permitAll()
-                .antMatchers("/api/**").hasRole(STUDENT.name())
-                .antMatchers(HttpMethod.DELETE, url)
-                .hasAuthority(COURSE_WRITE.name())
-                .antMatchers(HttpMethod.POST, url)
-                .hasAuthority(COURSE_WRITE.name())
-                .antMatchers(HttpMethod.PUT, url)
-                .hasAuthority(COURSE_WRITE.name())
-                .antMatchers(HttpMethod.GET, url)
-                .hasAnyRole(ADMIN.name(), ADMINTRAINEE.name()).anyRequest()
+                .antMatchers("/api/**").hasRole(STUDENT.name()).anyRequest()
                 .authenticated().and().httpBasic();
     }
 
